@@ -1,0 +1,23 @@
+{
+  "name": "webgx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/czgump/webgx.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/czgump/webgx/issues"
+  },
+  "homepage": "https://github.com/czgump/webgx#readme",
+  "dependencies": {
+    "echarts": "^4.0.4",
+    "zrender": "^4.0.3"
+  }
+}
