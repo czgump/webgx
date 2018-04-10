@@ -1,3 +1,0 @@
-// test.js
-
-// new change
