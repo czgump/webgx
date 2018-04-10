@@ -5,6 +5,7 @@
  * All rights reserved.
  *
  */
+
 import * as zrender from 'zrender/src/zrender';
 import * as zrUtil from 'zrender/src/core/util';
 import * as colorTool from 'zrender/src/tool/color';
@@ -49,6 +50,8 @@ zrUtil.mixin(MessageCenter, Eventful);
 function  Webgx(dom, opts) {
     opts = opts || {};
 
-
+    /**
+     * @type {HTMLDomElement}
+     */
 }
 
