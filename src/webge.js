@@ -1,5 +1,5 @@
 /*
- * Webgx
+ * Webge
  *
  * Copyright (c) 2018, Czgump
  * All rights reserved.
@@ -12,11 +12,6 @@ import * as colorTool from 'zrender/src/tool/color';
 import env from 'zrender/src/core/env';
 import timsort from 'zrender/src/core/timsort';
 import Eventful from 'zrender/src/mixin/Eventful';
-
-var assert = zrUtil.assert;
-var each = zrUtil.each;
-var isFunction = zrUtil.isFunction;
-var isObject = zrUtil.isObject;
 
 export var version = '1.0.0';
 
@@ -33,7 +28,7 @@ function createRegisterEventWithLowercaseName(method) {
 }
 
 /**
- * @module webgx~MessageCenter
+ * @module webge~MessageCenter
  */
 function MessageCenter() {
     Eventful.call(this);
@@ -45,13 +40,40 @@ zrUtil.mixin(MessageCenter, Eventful);
 
 
 /**
- * @module webgx~Webgx
+ * @module webge~Webge
  */
-function  Webgx(dom, opts) {
+function Webge(dom, opts) {
     opts = opts || {};
 
     /**
-     * @type {HTMLDomElement}
+     * @type {module:zrender/ZRender}
+     * @private
      */
+    var zr = this._zr = zrender.init(dom, {
+        renderer: opts.renderer || 'canvas',
+        devicePixelRatio: opts.devicePixelRatio,
+        width: opts.width,
+        height: opts.height
+    });
+
+    // Init mouse events
+    this._initEvents();
 }
 
+var webgeProto = Webge.prototype;
+
+/**
+ * @private
+ */
+webgeProto._initEvents = function () {
+    zrUtil.each(['click', 'dbclick','mousemove','mousedown','mouseup'], function (eveName) {
+        this._zr.on(eveName, function (e) {
+            var el = e.target;
+
+            debugger
+
+            console.info(eveName);
+            console.info(el);
+        }, this);
+    }, this);
+};
