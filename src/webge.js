@@ -1,23 +1,22 @@
 /*
- * Webge
+ * Webge, a 2d graph edit application based on modified zrender-4.0.3.
  *
  * Copyright (c) 2018, Czgump
  * All rights reserved.
  *
  */
 
-import * as zrender from 'zrender/src/zrender';
-import * as zrUtil from 'zrender/src/core/util';
-import * as colorTool from 'zrender/src/tool/color';
-import env from 'zrender/src/core/env';
-import timsort from 'zrender/src/core/timsort';
-import Eventful from 'zrender/src/mixin/Eventful';
+import * as zrender from './zrender';
+import * as zrUtil from './src/core/util';
+import * as colorTool from './src/tool/color';
+import env from './src/core/env';
+import timsort from './src/core/timsort';
+import Eventful from './src/mixin/Eventful';
 
+/**
+ * @type {string}
+ */
 export var version = '1.0.0';
-
-export var dependencies = {
-    zrender: '4.0.3'
-};
 
 function createRegisterEventWithLowercaseName(method) {
     return function (eventName, handler, context) {
@@ -38,9 +37,18 @@ MessageCenter.prototype.off = createRegisterEventWithLowercaseName('off');
 MessageCenter.prototype.one = createRegisterEventWithLowercaseName('one');
 zrUtil.mixin(MessageCenter, Eventful);
 
-
 /**
- * @module webge~Webge
+ * @module webgx/Webge
+ */
+/**
+ * @constructor
+ * @alias module:webgx/Webge
+ * @param {HTMLElement} dom
+ * @param {Object} opts
+ * @param {string} [opts.renderer='canvas'] 'canvas' or 'svg'
+ * @param {number} [opts.devicePixelRatio]
+ * @param {number} [opts.width] Can be 'auto' (the same as null/undefined)
+ * @param {number} [opts.height] Can be 'auto' (the same as null/undefined)
  */
 function Webge(dom, opts) {
     opts = opts || {};
@@ -70,10 +78,16 @@ webgeProto._initEvents = function () {
         this._zr.on(eveName, function (e) {
             var el = e.target;
 
-            debugger
-
             console.info(eveName);
             console.info(el);
         }, this);
     }, this);
+};
+
+/**
+ * 切换当前的操作工具类型
+ * @param {string} type
+ */
+webgeProto.switchTool = function (type) {
+    this._zr.handler.switchTool(type);
 };
