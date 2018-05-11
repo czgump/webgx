@@ -567,7 +567,7 @@ export function parseRichText(text, style) {
                     // `dirty()` and `textBackgroundColor.image` will be replaced with the loaded
                     // image, and then the right size will be calculated here at the next tick.
                     // See `graphic/helper/text.js`.
-                    // (2) If image loaded, and `textBackgroundColor.image` is image src string,
+                    // (2) If image loaded, and `textBackgroundColor.image` is image src_zrender string,
                     // use `imageHelper.findExistImage` to find cached image.
                     // `imageHelper.findExistImage` will always be called here before
                     // `imageHelper.createOrUpdateImage` in `graphic/helper/text.js#renderRichText`

@@ -386,7 +386,7 @@ Style.prototype = {
             var lineWidth = style.lineWidth;
             ctx.lineWidth = lineWidth / (
                 (this.strokeNoScale && el && el.getLineScale) ? el.getLineScale() : 1
-            );
+            ) / Style.GLOBAL_SCALE;
         }
     },
 
@@ -473,5 +473,8 @@ for (var i = 0; i < STYLE_COMMON_PROPS.length; i++) {
 
 // Provide for others
 Style.getGradient = styleProto.getGradient;
+
+// 页面缩放比例
+Style.GLOBAL_SCALE = 1;
 
 export default Style;

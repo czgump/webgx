@@ -1,9 +1,5 @@
 /**
- * echarts设备环境识别
- *
- * @desc echarts基于Canvas，纯Javascript图表库，提供直观，生动，可交互，可个性化定制的数据统计图表。
- * @author firede[firede@firede.us]
- * @desc thanks zepto.
+ * 设备环境识别
  */
 
 var env = {};

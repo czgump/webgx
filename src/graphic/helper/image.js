@@ -39,7 +39,7 @@ export function createOrUpdateImage(newImageOrSrc, image, hostEl, cb, cbPayload)
             return image;
         }
 
-        // Only when there is no existent image or existent image src
+        // Only when there is no existent image or existent image src_zrender
         // is different, this method is responsible for load.
         var cachedImgObj = globalImageCache.get(newImageOrSrc);
 

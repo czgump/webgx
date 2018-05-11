@@ -5,11 +5,11 @@ import Animatable from './mixin/Animatable';
 import * as zrUtil from './core/util';
 
 /**
- * @alias module:zrender/Element
+ * @alias module:webgx/Element
  * @constructor
- * @extends {module:zrender/mixin/Animatable}
- * @extends {module:zrender/mixin/Transformable}
- * @extends {module:zrender/mixin/Eventful}
+ * @extends {module:webgx/mixin/Animatable}
+ * @extends {module:webgx/mixin/Transformable}
+ * @extends {module:webgx/mixin/Eventful}
  */
 var Element = function (opts) { // jshint ignore:line
 
@@ -34,37 +34,21 @@ Element.prototype = {
     type: 'element',
 
     /**
-     * 元素名字
-     * Element name
-     * @type {string}
-     */
-    name: '',
-
-    /**
-     * ZRender 实例对象，会在 element 添加到 zrender 实例中后自动赋值
-     * ZRender instance will be assigned when element is associated with zrender
-     * @name module:/zrender/Element#__zr
-     * @type {module:zrender/ZRender}
+     * WebRender 实例对象，会在 element 添加到 webrender 实例中后自动赋值
+     * WebRender instance will be assigned when element is associated with webrender
+     * @name module:/webrender/Element#__zr
+     * @type {module:webrender/WebRender}
      */
     __zr: null,
 
     /**
      * 图形是否忽略，为true时忽略图形的绘制以及事件触发
      * If ignore drawing and events of the element object
-     * @name module:/zrender/Element#ignore
+     * @name module:/webrender/Element#ignore
      * @type {boolean}
      * @default false
      */
     ignore: false,
-
-    /**
-     * 用于裁剪的路径(shape)，所有 Group 内的路径在绘制时都会被这个路径裁剪
-     * 该路径会继承被裁减对象的变换
-     * @type {module:zrender/graphic/Path}
-     * @see http://www.w3.org/TR/2dcontext/#clipping-region
-     * @readOnly
-     */
-    clipPath: null,
 
     /**
      * 是否是 Group
@@ -177,47 +161,9 @@ Element.prototype = {
     },
 
     /**
-     * @param {module:zrender/graphic/Path} clipPath
-     */
-    setClipPath: function (clipPath) {
-        var zr = this.__zr;
-        if (zr) {
-            clipPath.addSelfToZr(zr);
-        }
-
-        // Remove previous clip path
-        if (this.clipPath && this.clipPath !== clipPath) {
-            this.removeClipPath();
-        }
-
-        this.clipPath = clipPath;
-        clipPath.__zr = zr;
-        clipPath.__clipTarget = this;
-
-        this.dirty(false);
-    },
-
-    /**
-     */
-    removeClipPath: function () {
-        var clipPath = this.clipPath;
-        if (clipPath) {
-            if (clipPath.__zr) {
-                clipPath.removeSelfFromZr(clipPath.__zr);
-            }
-
-            clipPath.__zr = null;
-            clipPath.__clipTarget = null;
-            this.clipPath = null;
-
-            this.dirty(false);
-        }
-    },
-
-    /**
-     * Add self from zrender instance.
+     * Add self from webrender instance.
      * Not recursively because it will be invoked when element added to storage.
-     * @param {module:zrender/ZRender} zr
+     * @param {module:webgx/WebRender} zr
      */
     addSelfToZr: function (zr) {
         this.__zr = zr;
@@ -227,10 +173,6 @@ Element.prototype = {
             for (var i = 0; i < animators.length; i++) {
                 zr.animation.addAnimator(animators[i]);
             }
-        }
-
-        if (this.clipPath) {
-            this.clipPath.addSelfToZr(zr);
         }
     },
 
@@ -247,10 +189,6 @@ Element.prototype = {
             for (var i = 0; i < animators.length; i++) {
                 zr.animation.removeAnimator(animators[i]);
             }
-        }
-
-        if (this.clipPath) {
-            this.clipPath.removeSelfFromZr(zr);
         }
     }
 };

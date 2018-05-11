@@ -34,12 +34,12 @@ var handlerNames = [
     'mouseup', 'mousedown', 'mousemove', 'contextmenu'
 ];
 /**
- * @alias module:zrender/Handler
+ * @alias module:webgx/Handler
  * @constructor
- * @extends module:zrender/mixin/Eventful
- * @param {module:zrender/Storage} storage Storage instance.
- * @param {module:zrender/Painter} painter Painter instance.
- * @param {module:zrender/dom/HandlerProxy} proxy HandlerProxy instance.
+ * @extends module:webgx/mixin/Eventful
+ * @param {module:webgx/Storage} storage Storage instance.
+ * @param {module:webgx/Painter} painter Painter instance.
+ * @param {module:webgx/dom/HandlerProxy} proxy HandlerProxy instance.
  * @param {HTMLElement} painterRoot painter.root (not painter.getViewportRoot()).
  */
 var Handler = function(storage, painter, proxy, painterRoot) {
@@ -50,6 +50,13 @@ var Handler = function(storage, painter, proxy, painterRoot) {
     this.painter = painter;
 
     this.painterRoot = painterRoot;
+
+    /**
+     * 各类人工操作的处理类
+     * @type {Object}
+     */
+    this.oprHandlers = {};
+    this.curOprHandler = null;
 
     proxy = proxy || new EmptyProxy();
 
@@ -108,7 +115,34 @@ Handler.prototype = {
         this.proxy = proxy;
     },
 
+    /**
+     * 转换坐标，从local到视图坐标
+     * @param event
+     */
+    localToViewer: function (event) {
+        var invTransform = this.painter.invTransform;
+        var v2 = [event.zrX, event.zrY];
+
+        if (invTransform) {
+            vec2.applyTransform(v2, v2, invTransform);
+        }
+
+        event.zrX = v2[0];
+        event.zrY = v2[1];
+    },
+
     mousemove: function (event) {
+        this.localToViewer(event);
+
+        var x = event.zrX;
+        var y = event.zrY;
+
+        this._hovered = this.findHover(x, y);
+
+        var oprHandler = this.curOprHandler;
+        if (oprHandler) oprHandler.mousemove(event);
+
+        /*
         var x = event.zrX;
         var y = event.zrY;
 
@@ -142,6 +176,8 @@ Handler.prototype = {
         if (hoveredTarget && hoveredTarget !== lastHoveredTarget) {
             this.dispatchToElement(hovered, 'mouseover', event);
         }
+        */
+        // by czgump, 2018.04.19
     },
 
     mouseout: function (event) {
@@ -233,18 +269,8 @@ Handler.prototype = {
         }
 
         if (!eventPacket.cancelBubble) {
-            // 冒泡到顶级 zrender 对象
+            // 冒泡到顶级 webrender 对象
             this.trigger(eventName, eventPacket);
-            // 分发事件到用户自定义层
-            // 用户有可能在全局 click 事件中 dispose，所以需要判断下 painter 是否存在
-            this.painter && this.painter.eachOtherLayer(function (layer) {
-                if (typeof(layer[eventHandler]) == 'function') {
-                    layer[eventHandler].call(layer, eventPacket);
-                }
-                if (layer.trigger) {
-                    layer.trigger(eventName, eventPacket);
-                }
-            });
         }
     },
 
@@ -252,36 +278,74 @@ Handler.prototype = {
      * @private
      * @param {number} x
      * @param {number} y
-     * @param {module:zrender/graphic/Displayable} exclude
-     * @return {model:zrender/Element}
+     * @return {model:webgx/Element}
      * @method
      */
-    findHover: function(x, y, exclude) {
-        var list = this.storage.getDisplayList();
+    findHover: function(x, y) {
+        var layers = this.storage._layers;
         var out = {x: x, y: y};
 
-        for (var i = list.length - 1; i >= 0 ; i--) {
-            var hoverCheckResult;
-            if (list[i] !== exclude
-                // getDisplayList may include ignored item in VML mode
-                && !list[i].ignore
-                && (hoverCheckResult = isHover(list[i], x, y))
-            ) {
-                !out.topTarget && (out.topTarget = list[i]);
-                if (hoverCheckResult !== SILENT) {
-                    out.target = list[i];
-                    break;
+        for (var j = layers.length - 1; j >= 0; j--) {
+            var lyr = layers[j];
+            if (!lyr.enabled) { continue; }
+
+            var list = lyr.objList;
+            for (var i = list.length - 1; i >= 0; i--) {
+                var hoverCheckResult;
+                if (!list[i].ignore && (hoverCheckResult = isHover(list[i], x, y))) {
+                    !out.topTarget && (out.topTarget = list[i]);
+                    if (hoverCheckResult !== SILENT) {
+                        out.target = list[i];
+                        return out;
+                    }
                 }
             }
         }
 
         return out;
+    },
+
+    /**
+     * 添加人工操作的处理类
+     * @param {Object} handlers
+     */
+    addOprHandlers: function (handlers, webrender) {
+        util.each(handlers, function (handler, type) {
+            var oprHandler = this.oprHandlers[type];
+            if (!oprHandler) {
+                this.oprHandlers[type] = new handler(webrender);
+            }
+        }, this);
+    },
+
+    /**
+     * @param {string} type
+     */
+    switchTool: function (type) {
+        var curOpr = this.curOprHandler;
+
+        if (curOpr) {
+            curOpr.quit();
+        }
+
+        var oprHandler = this.oprHandlers[type];
+
+        if (oprHandler) this.curOprHandler = oprHandler;
+        else this.curOprHandler = null;
     }
 };
 
 // Common handlers
 util.each(['click', 'mousedown', 'mouseup', 'mousewheel', 'dblclick', 'contextmenu'], function (name) {
     Handler.prototype[name] = function (event) {
+        // event中坐标转换
+        this.localToViewer(event);
+
+        // 事件由相应的工具处理
+        var oprHandler = this.curOprHandler;
+        if (oprHandler) oprHandler[name](event);
+
+        /*
         // Find hover again to avoid click event is dispatched manually. Or click is triggered without mouseover
         var hovered = this.findHover(event.zrX, event.zrY);
         var hoveredTarget = hovered.target;
@@ -311,6 +375,7 @@ util.each(['click', 'mousedown', 'mouseup', 'mousewheel', 'dblclick', 'contextme
         }
 
         this.dispatchToElement(hovered, name, event);
+        */
     };
 });
 
@@ -319,12 +384,6 @@ function isHover(displayable, x, y) {
         var el = displayable;
         var isSilent;
         while (el) {
-            // If clipped by ancestor.
-            // FIXME: If clipPath has neither stroke nor fill,
-            // el.clipPath.contain(x, y) will always return false.
-            if (el.clipPath && !el.clipPath.contain(x, y))  {
-                return false;
-            }
             if (el.silent) {
                 isSilent = true;
             }

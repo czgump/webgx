@@ -4,7 +4,6 @@
  * @module zrender/graphic/Displayable
  */
 
-
 import * as zrUtil from '../core/util';
 import Style from './Style';
 import Element from '../Element';
@@ -66,20 +65,6 @@ Displayable.prototype = {
      * @default false
      */
     invisible: false,
-
-    /**
-     * @name module:/zrender/graphic/Displayable#z
-     * @type {number}
-     * @default 0
-     */
-    z: 0,
-
-    /**
-     * @name module:/zrender/graphic/Displayable#z
-     * @type {number}
-     * @default 0
-     */
-    z2: 0,
 
     /**
      * z层level，决定绘画在哪层canvas中
@@ -206,6 +191,10 @@ Displayable.prototype = {
         this.__dirty = true;
 
         this._rect = null;
+
+        // 加入到hover层时__storage===undefined
+        var storage = this.__storage;
+        storage && (storage.__dirty = true) && (storage._layers[this.zlevel].dirty = true);
 
         this.__zr && this.__zr.refresh();
     },

@@ -1,13 +1,8 @@
-/**
- * Do not mount those modules on 'src/zrender' for better tree shaking.
- */
-
 import * as zrUtil from './core/util';
 import * as matrix from './core/matrix';
 import * as vector from './core/vector';
 import * as colorTool from './tool/color';
 import * as pathTool from './tool/path';
-
 
 export {default as Group} from './container/Group';
 export {default as Path} from './graphic/Path';
