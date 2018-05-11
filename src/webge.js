@@ -9,13 +9,13 @@
 import WebRender from './webrender';
 import guid from './core/guid';
 
-import DrawLine from './tool/draw/drawLineHandler';
-import DrawPolyline from './tool/draw/drawPolylineHandler';
+import DrawLine from './tool/draw/DrawLineHandler';
+import DrawPolyline from './tool/draw/DrawPolylineHandler';
 
-import Pan from './tool/zoom/panHandler';
-import ZoomIn from './tool/zoom/zoomInHandler';
-import ZoomOut from './tool/zoom/zoomOutHandler';
-import ZoomRect from './tool/zoom/zoomRectHandler';
+import Pan from './tool/zoom/PanHandler';
+import ZoomIn from './tool/zoom/ZoomInHandler';
+import ZoomOut from './tool/zoom/ZoomOutHandler';
+import ZoomRect from './tool/zoom/ZoomRectHandler';
 
 /**
  * @type {string}

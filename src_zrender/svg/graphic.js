@@ -304,7 +304,7 @@ svgImage.brush = function (el) {
 
     if (image !== el.__imageSrc) {
         attrXLink(svgEl, 'href', image);
-        // Caching image src
+        // Caching image src_zrender
         el.__imageSrc = image;
     }
 

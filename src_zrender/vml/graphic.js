@@ -556,7 +556,7 @@ if (!env.canvasSupported) {
                 imageRuntimeStyle.width = oldRuntimeWidth;
                 imageRuntimeStyle.height = oldRuntimeHeight;
 
-                // Caching image original width, height and src
+                // Caching image original width, height and src_zrender
                 this._imageSrc = src;
                 this._imageWidth = ow;
                 this._imageHeight = oh;
@@ -671,7 +671,7 @@ if (!env.canvasSupported) {
                     imageELStyle.width = round(scaleX * ow * dw / sw) + 'px';
                     imageELStyle.height = round(scaleY * oh * dh / sh) + 'px';
 
-                    // Caching image original width, height and src
+                    // Caching image original width, height and src_zrender
                     self._imageWidth = ow;
                     self._imageHeight = oh;
                     self._imageSrc = image;
@@ -718,7 +718,7 @@ if (!env.canvasSupported) {
         if (alpha < 1) {
             filterStr += '.Alpha(opacity=' + round(alpha * 100) + ') ';
         }
-        filterStr += imageTransformPrefix + '.AlphaImageLoader(src=' + image + ', SizingMethod=scale)';
+        filterStr += imageTransformPrefix + '.AlphaImageLoader(src_zrender=' + image + ', SizingMethod=scale)';
 
         imageELStyle.filter = filterStr;
 
