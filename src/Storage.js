@@ -163,7 +163,8 @@ Storage.prototype = {
      * 清空并且释放Storage
      */
     dispose: function () {
-        this._layers = null;
+        this._layers = [];
+        this._dirty = true;
     }
 };
 

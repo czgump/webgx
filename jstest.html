@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        // 测试eval的替代方法
+        console.info('test non eval');
+        //var storage = {x: 0, y:0};
+        var fn = 'var i = 10; console.info(this.x); return i + this.x; ';
+
+        function evalfn() {
+            var func = Function;
+            return new func(fn);
+        }
+
+        var obj = {x: 5}
+
+        var newfn = evalfn();
+
+        console.info(newfn.call(obj));
+
+        obj.x = 6;
+
+        console.info(newfn.call(obj));
+
+        // 测试空语句
+        console.info('test empty sentence');
+
+        var b = {type: {}};
+        var c = 'type';
+        var d = 'name';
+        b[c] ? b[c][d] += 1 : (b[c] = {} ,b[c][d] = 1);
+
+        console.info(b);
+
+
+    </script>
+</body>
+</html>

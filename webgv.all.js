@@ -1,7 +1,4 @@
 
-// export * from './src/zrender';
-export * from './src/webge_0413';
-export * from './src/export';
+export * from './src/webrender';
+export * from './src/export-webgv';
 
-import './src/svg/svg';
-import './src/vml/vml';
